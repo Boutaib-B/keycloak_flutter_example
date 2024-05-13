@@ -47,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String password = '';
   final String identifier = 'prospace-mobile-client';
   final String secret = 'e6NTL8U1TueWyF7RH3DJsjPiNvY06nX0';
+ // final String protectedResourceUrl = 'http://example.com/protected-resources.txt';
 
   @override
   Widget build(BuildContext context) {
