@@ -124,6 +124,11 @@ class _MyHomePageState extends State<MyHomePage> {
       var client = await oauth2.resourceOwnerPasswordGrant(
           Uri.parse(authorizationEndpoint), username, password,
           identifier: identifier, secret: secret);
+      //   Dio dio = Dio();
+      //    var response = await dio.get(protectedResourceUrl,
+      //       options: Options(headers: {
+      //        HttpHeaders.authorizationHeader: 'Bearer ${client.credentials.accessToken}'
+      //    }));
 
       print('Access Token: ${client.credentials.accessToken}');
 
