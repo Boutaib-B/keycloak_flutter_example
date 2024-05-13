@@ -43,8 +43,8 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _loggedIn = false;
 
   final String authorizationEndpoint = 'http://192.168.11.103:8080/realms/jhipster/protocol/openid-connect/token';
-  final String username = 'admin';
-  final String password = 'admin';
+  String username = '';
+  String password = '';
   final String identifier = 'prospace-mobile-client';
   final String secret = 'e6NTL8U1TueWyF7RH3DJsjPiNvY06nX0';
 
@@ -59,16 +59,50 @@ class _MyHomePageState extends State<MyHomePage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircleAvatar(
-            backgroundImage: const NetworkImage(
-                "https://www.xda-developers.com/files/2018/02/Flutter-Framework-Feature-Image-Red.png"),
-            minRadius: MediaQuery.of(context).size.width / 4,
+          Image.asset(
+            'assets/space-1.jpg', // Chemin de l'image à partir du dossier "img"
+            width: MediaQuery.of(context).size.width / 2, // Taille de l'image
           ),
           const SizedBox(
-            height: 280,
+            height: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  username = value;
+                });
+              },
+              decoration: InputDecoration(
+                labelText: 'Username',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  password = value;
+                });
+              },
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 20,
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+            margin: EdgeInsets.symmetric(horizontal: 20.0),
             child: MaterialButton(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0)),
