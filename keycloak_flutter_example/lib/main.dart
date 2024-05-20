@@ -1,10 +1,11 @@
-import 'dart:convert';
-import 'dart:io';
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:dio/dio.dart';
 import 'package:oauth2/oauth2.dart' as oauth2;
+import 'package:uni_links/uni_links.dart';
+
+import 'callback1.dart'; // Import de la classe CallbackPage depuis le fichier callbackpage.dart
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,13 +42,56 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool _loggedIn = false;
-
-  final String authorizationEndpoint = 'http://192.168.11.103:8080/realms/jhipster/protocol/openid-connect/token';
+  late StreamSubscription _sub;
+  final String authorizationEndpoint = 'http://10.0.51.176:8080/realms/jhipster/protocol/openid-connect/token';
   String username = '';
   String password = '';
   final String identifier = 'prospace-mobile-client';
   final String secret = 'e6NTL8U1TueWyF7RH3DJsjPiNvY06nX0';
- // final String protectedResourceUrl = 'http://example.com/protected-resources.txt';
+
+  @override
+  void initState() {
+    super.initState();
+    initUniLinks();
+  }
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+
+  Future<void> initUniLinks() async {
+    _sub = uriLinkStream.listen((Uri? uri) {
+      if (uri != null) {
+        handleDeepLink(uri);
+      }
+    }, onError: (Object err) {
+      // Handle exception
+    });
+
+    try {
+      Uri? initialUri = await getInitialUri();
+      if (initialUri != null) {
+        handleDeepLink(initialUri);
+      }
+    } on PlatformException {
+      // Handle exception
+    }
+  }
+
+  void handleDeepLink(Uri uri) {
+    String? token = uri.queryParameters['token'];
+    if (token != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CallbackPage(token: token),
+        ),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -61,12 +105,10 @@ class _MyHomePageState extends State<MyHomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(
-            'assets/space-1.jpg', // Chemin de l'image à partir du dossier "img"
-            width: MediaQuery.of(context).size.width / 2, // Taille de l'image
+            'assets/space-1.jpg',
+            width: MediaQuery.of(context).size.width / 2,
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: TextField(
@@ -81,9 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: TextField(
@@ -99,9 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20.0),
             child: MaterialButton(
@@ -124,11 +162,6 @@ class _MyHomePageState extends State<MyHomePage> {
       var client = await oauth2.resourceOwnerPasswordGrant(
           Uri.parse(authorizationEndpoint), username, password,
           identifier: identifier, secret: secret);
-      //   Dio dio = Dio();
-      //    var response = await dio.get(protectedResourceUrl,
-      //       options: Options(headers: {
-      //        HttpHeaders.authorizationHeader: 'Bearer ${client.credentials.accessToken}'
-      //    }));
 
       print('Access Token: ${client.credentials.accessToken}');
 
